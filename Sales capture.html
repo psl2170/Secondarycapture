@@ -1,0 +1,163 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Today's Secondary Sale</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 20px;
+            padding: 20px;
+        }
+        form {
+            display: flex;
+            flex-direction: column;
+            max-width: 600px;
+            margin-bottom: 20px;
+        }
+        label {
+            font-weight: bold;
+            margin-top: 10px;
+        }
+        input, select, button {
+            margin-bottom: 10px;
+            padding: 8px;
+            width: 100%;
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 20px;
+        }
+        th, td {
+            border: 1px solid black;
+            padding: 8px;
+            text-align: left;
+        }
+        th {
+            background-color: #f4f4f4;
+        }
+    </style>
+</head>
+<body>
+
+    <h2>Today's Secondary Sale</h2>
+
+    <form id="salesForm">
+        <label for="asm">ASM:</label>
+        <select id="asm" onchange="updateSO()">
+            <option value="">Select ASM</option>
+            <option value="Krishan kumar">Krishan Kumar</option>
+            <option value="Shubham Nanda">Shubham Nanda</option>
+            <option value="Deepak Kaushik">Deepak Kaushik</option>
+            <option value="Prashant Kumar">Prashant Kumar</option>
+        </select>
+
+        <label for="so">Sales Officer:</label>
+        <select id="so">
+            <option value="">Select SO</option>
+        </select>
+
+        <label for="retailSale">Retail Sale at Distributor:</label>
+        <input type="number" id="retailSale" min="0" required>
+
+        <label for="subDbBilling">Billing to Sub DB:</label>
+        <input type="number" id="subDbBilling" min="0" required>
+
+        <label for="secondaryWholesale">Secondary to Wholesale:</label>
+        <input type="number" id="secondaryWholesale" min="0" required>
+
+        <button type="button" onclick="addSalesData()">Add Sales Data</button>
+    </form>
+
+    <h3>Summary Table</h3>
+    <table id="summaryTable">
+        <thead>
+            <tr>
+                <th>ASM</th>
+                <th>SO</th>
+                <th>Retail Sale</th>
+                <th>Billing to Sub DB</th>
+                <th>Secondary to Wholesale</th>
+            </tr>
+        </thead>
+        <tbody></tbody>
+    </table>
+
+    <button onclick="submitData()">Final Submit</button>
+
+    <script>
+        const salesData = [];
+        const soData = {
+            "Krishan kumar": ["Deepak Pandey", "Devender Tondon", "Kartik Singh", "Shailendra Kumar Singh", "Sunil Kumar", "Naval Choudhray"],
+            "Shubham Nanda": ["Harvinder", "Sunil Shukla", "Vipin Kumar"],
+            "Deepak Kaushik": ["Ravi Shrivastava", "Abhishek Shukla", "Vacant - Suraj Kumar", "Surender Singh Rathore"],
+            "Prashant Kumar": ["Amit Pandey", "Pradeep Kumar", "Rahul Kumar", "Vacant", "Sangeeta Kumari"]
+        };
+
+        function updateSO() {
+            const asm = document.getElementById("asm").value;
+            const soDropdown = document.getElementById("so");
+            soDropdown.innerHTML = '<option value="">Select SO</option>';
+            if (asm && soData[asm]) {
+                soData[asm].forEach(so => {
+                    let option = document.createElement("option");
+                    option.value = so;
+                    option.textContent = so;
+                    soDropdown.appendChild(option);
+                });
+            }
+        }
+
+        function addSalesData() {
+            const asm = document.getElementById("asm").value;
+            const so = document.getElementById("so").value;
+            const retailSale = document.getElementById("retailSale").value;
+            const subDbBilling = document.getElementById("subDbBilling").value;
+            const secondaryWholesale = document.getElementById("secondaryWholesale").value;
+
+            if (!asm || !so || retailSale === "" || subDbBilling === "" || secondaryWholesale === "") {
+                alert("Please fill in all fields before adding sales data.");
+                return;
+            }
+
+            salesData.push({ asm, so, retailSale, subDbBilling, secondaryWholesale });
+
+            const tableBody = document.getElementById("summaryTable").getElementsByTagName("tbody")[0];
+            const newRow = tableBody.insertRow();
+            newRow.innerHTML = `<td>${asm}</td><td>${so}</td><td>${retailSale}</td><td>${subDbBilling}</td><td>${secondaryWholesale}</td>`;
+
+            document.getElementById("so").value = "";
+            document.getElementById("retailSale").value = "";
+            document.getElementById("subDbBilling").value = "";
+            document.getElementById("secondaryWholesale").value = "";
+        }
+
+        function submitData() {
+            if (salesData.length === 0) {
+                alert("No sales data to submit.");
+                return;
+            }
+
+            fetch('https://script.google.com/macros/s/AKfycbxaXdLJ0L5qvtrS_s40JtQw681XBHR22IqH7SrOue4zCbBJK3dp7YPYxEpznAyC76GbCg/exec', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify(salesData)
+            })
+            .then(response => response.json())
+            .then(data => {
+                alert("Data submitted successfully!");
+                salesData.length = 0;
+                document.getElementById("summaryTable").getElementsByTagName("tbody")[0].innerHTML = "";
+            })
+            .catch(error => {
+                alert("Error submitting data: " + error);
+            });
+        }
+    </script>
+
+</body>
+</html>
