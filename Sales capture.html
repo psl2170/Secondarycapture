@@ -11,17 +11,18 @@
             padding: 20px;
         }
         form {
-            display: flex;
-            flex-direction: column;
+            display: grid;
+            grid-template-columns: 1fr 2fr;
+            gap: 10px;
             max-width: 600px;
             margin-bottom: 20px;
         }
         label {
             font-weight: bold;
             margin-top: 10px;
+            align-self: center;
         }
         input, select, button {
-            margin-bottom: 10px;
             padding: 8px;
             width: 100%;
         }
@@ -38,6 +39,31 @@
         th {
             background-color: #f4f4f4;
         }
+        .add-sales-button {
+            background-color: #4CAF50;
+            color: white;
+            border: none;
+            padding: 10px;
+            cursor: pointer;
+            grid-column: span 2;
+        }
+        .submit-button {
+            background-color: #f44336;
+            color: white;
+            border: none;
+            padding: 10px;
+            cursor: pointer;
+            margin-top: 30px;
+        }
+        .notification {
+            margin-top: 20px;
+            padding: 10px;
+            background-color: #4CAF50;
+            color: white;
+            text-align: center;
+            border-radius: 5px;
+            display: none;
+        }
     </style>
 </head>
 <body>
@@ -45,13 +71,30 @@
     <h2>Today's Secondary Sale</h2>
 
     <form id="salesForm">
+<label for="currentDate">Sale Date:</label>
+<input type="date" id="currentDate" required>
+        <label for="stateHead">Region Head:</label>
+        <select id="stateHead" onchange="updateASM()">
+            <option value="">Select Region Head</option>
+          <option value="Mr. Rakesh Pandey">Mr. Rakesh Pandey</option>
+<option value="Mr. Ravi Shankar">Mr. Ravi Shankar</option>
+<option value="Mr. Manoj Chauhan">Mr. Manoj Chauhan</option>
+<option value="Mr. A.B. Singh">Mr. A.B. Singh</option>
+<option value="Mr. DK Singh">Mr. DK Singh</option>
+<option value="Mr. Sunil Dubey">Mr. Sunil Dubey</option>
+<option value="Mr. Ravindra Bhaduria">Mr. Ravindra Bhaduria</option>
+<option value=" Mr. Mahesh Purohit"> Mr. Mahesh Purohit</option>
+<option value="Mr. Sudhesh Singh">Mr. Sudhesh Singh</option>
+<option value="Mr. Sunil Sharma">Mr. Sunil Sharma</option>
+<option value="Mr. Dheeraj Goswami">Mr. Dheeraj Goswami</option>
+<option value="Mr. Sinha - Pune">Mr. Sinha - Pune</option>
+<option value="Mr. Gangadharam">Mr. Gangadharam</option>
+
+        </select>
+
         <label for="asm">ASM:</label>
         <select id="asm" onchange="updateSO()">
             <option value="">Select ASM</option>
-            <option value="Krishan kumar">Krishan Kumar</option>
-            <option value="Shubham Nanda">Shubham Nanda</option>
-            <option value="Deepak Kaushik">Deepak Kaushik</option>
-            <option value="Prashant Kumar">Prashant Kumar</option>
         </select>
 
         <label for="so">Sales Officer:</label>
@@ -68,13 +111,15 @@
         <label for="secondaryWholesale">Secondary to Wholesale:</label>
         <input type="number" id="secondaryWholesale" min="0" required>
 
-        <button type="button" onclick="addSalesData()">Add Sales Data</button>
+        <button type="button" class="add-sales-button" onclick="addSalesData()">Add Sales Data</button>
     </form>
 
     <h3>Summary Table</h3>
     <table id="summaryTable">
         <thead>
             <tr>
+		<th>DateofSale</th>
+                <th>RegionHead</th>
                 <th>ASM</th>
                 <th>SO</th>
                 <th>Retail Sale</th>
@@ -85,16 +130,144 @@
         <tbody></tbody>
     </table>
 
-    <button onclick="submitData()">Final Submit</button>
+    <button class="submit-button" onclick="submitData()">Final Submit</button>
+    <div id="notification" class="notification">Form submitted successfully!</div>
 
     <script>
-        const salesData = [];
-        const soData = {
-            "Krishan kumar": ["Deepak Pandey", "Devender Tondon", "Kartik Singh", "Shailendra Kumar Singh", "Sunil Kumar", "Naval Choudhray"],
-            "Shubham Nanda": ["Harvinder", "Sunil Shukla", "Vipin Kumar"],
-            "Deepak Kaushik": ["Ravi Shrivastava", "Abhishek Shukla", "Vacant - Suraj Kumar", "Surender Singh Rathore"],
-            "Prashant Kumar": ["Amit Pandey", "Pradeep Kumar", "Rahul Kumar", "Vacant", "Sangeeta Kumari"]
+      
+      let salesData = []; 
+      
+        const asmData = {
+           "Mr. Rakesh Pandey" : ["Deepak Kaushik", "Shubham Nanda", "Anuj Srivastava", "Niraj Shankar", "Ravi Kumar Sharma", "Not available", "Prashant Kumar"],
+"Mr. Ravi Shankar" : ["Harpal Singh", "Parveen Kumar", "Not available", "Parmod Kumar", "Vijay Chawala"],
+"Mr. Manoj Chauhan" : ["Satya Prakash", "Adesh Rana", "Nitin Vashisth", "Lokesh Kumar Singh", "Priyank Saraswat", "Alok Bhatnagar", "Manoj"],
+"Mr. A.B. Singh" : ["RASMIKANT BHUJABAL", "Dhananjay Beura", "Sunil Kumar Mohanty", "Biswaranjan Das", "Biswaranjan Das/Guru Charan Nayak", "Guru Charan Nayak", "MOHAN PATRO", "Supriya Bardhan", "Rajib Chakraborty", "Dipak Das", "Hari Chandra Newar", "SK SABIR", "Shaibal Basak", "Biplab Banerjee", "SAMARESH GHOSH", "SOURAV BHATTACHARYA", "Om Prakash", "Bipul Bose", "Sanjoy Ch Das"],
+"Mr. DK Singh" : ["Raunak Kumar", "Not available", "Harish Kumar", "Rana Dharmaraj Singh", "Manoj Kumar Thakur", "Abhishek Kumar"],
+"Mr. Sunil Dubey" : ["Vijay Singh", "Abhiranjan Singh", "Saurabh Rai", "Manish Garg", "Prabhat Kumar Sharma", "PRABHAT CHANDRA NAYAK", "Nitin Goswamee", "Virendra Kumar", "ANUPAM MANI UPADHAYA"],
+"Mr. Ravindra Bhaduria" : ["Not available", "Chandrakant Madanlal Solanki", "Rupeshbhai Rashikbhai Dave", "Vineshkumar Balkrushnaray Trivedi", "Arjun Jethabhai Chhelana", "Manish Ashokbhai Vagh", "Kamal Sharma"],
+" Mr. Mahesh Purohit" : ["Rahul rai ", "Abhijeet Singh", "VIJAY SINGH", "Ajay Manjul Yadav", "Samadhan Jadhav"],
+"Mr. Sudhesh Singh" : ["Mr.Sanjay Bhopte", "Aashutosh Shrivastava", "Yatendra Singh", "Narendra Singh Solanki", "Pradeep Sharma", "Not available"],
+"Mr. Sunil Sharma" : ["Sumit Kakkar", "Gulshan Kalra", "Ashok Kumar Pandita"],
+"Mr. Dheeraj Goswami" : ["Kamal Sharma", "Ajay Singh Rajawat", "Udai Singh", "Vishnu Shankar Chaturvedi", "Ranveer Singh"],
+"Mr. Sinha - Pune" : ["SK SWAMI", "Shivaji Tamgale", "RAJESH UPADHYAY", "VIJAY WAGH", "CHANDPASHA PATHAN", "SAMBHAJI JADHAV", "RAVINDRA MOHITE", "NANDKUMAR SHIRGAVE"],
+"Mr. Gangadharam" : ["Not available", "Nizar C P", "T.V.Rajagopal", "V. Venkatraman", "Padmanaban Saravanan", "Jayaprakash N", "Vasantha kumar M", "MUNIRAJA GR", "Muniraja G R", "Vedantam Murali Krishna", "Murali Krishna", "Singavarapu Ravi", "G Anant Rao", "Kottapalli Murali Krishna", "KVSV Paparo", "I.Kranthi Kumar", "Md.Sabeer", "M.Ravi kumar"]
+
         };
+
+        const soData = {
+            "Deepak Kaushik" : ["Ravi", "Suraj Kumar", "Surendra Singh", "Abhishek Shukla"],
+"Shubham Nanda" : ["Sunil Shukla", "Harvinder", "Vipin Shukla"],
+"Anuj Srivastava" : ["Bhuwan", "yagyadutt sharma", "Kundan Kumar"],
+"Niraj Shankar" : ["Niraj Shankar", "Kundan Kumar"],
+"Ravi Kumar Sharma" : ["Baldev", "Sudhir Sharma"],
+"Not available" : ["Sangeeta Kumari", "Pardeep Kumar", "Amit Kumar Pandey", "pankaj", "AJIT KUMAR", "Akash Kumar Mishra", "Vishal Kumar", "Mitesh Sorthiya", "Sachin Madanlal Solanki", "Jagdishbhai Amrutlal Parmar", "Altaf Chuhan", "Vacant Ahemdabad", "Shaikh Mohdmueen", "Vacant Bhavanagar", "Gosai Kailashgiri Ramnikgiri", "Vacant Godhara", "Rashmikant Dasharathbhai Limbachiya", "Irfanbhai Jahurbhai Khatri", "Prakashbhai Ramanbhai Patel", "Gajendra Bhawsar", "Amit mittal", "Amit puri", "Sukesh Kumar", "Chandran", "Akhil", "Harikumar", "Madan P", "Ashwin G N", "Naveen Kumar", "Keerthi Kumar", "Manjunathan  Ravi", "Edhyathulla", "Edayathulla", "BELAGAVI-VACANT", "Bijapur-Vacant", "Shailendra Raju", "AMARESH", "HUBLI-VECANT", "Javeed Khan", "Ravindra Raju", "MANMADHARAO", "VENKATARAMANA", "MD MUNEER"],
+"Prashant Kumar" : ["Pardeep Kumar"],
+"Harpal Singh" : ["Naresh Sikri", "Ajit Kumar", "Ramu Sharma"],
+"Parveen Kumar" : ["Rakesh", "Sahil Girdhar", "pankaj"],
+"Parmod Kumar" : ["HEMANT KUMAR", "AJIT KUMAR", "RAMDITA MAL", "RAHUL SHARMA"],
+"Vijay Chawala" : ["Amarjeet monga", "Keshav pahuja", "Rajesh Kumar"],
+"Satya Prakash" : ["Anand Gupta", "Arjun", "Gaurav Kumar", "Mukesh Kumar Sharma"],
+"Adesh Rana" : ["Ripu Sharma", "Nasir Husain", "Ankit Kumar"],
+"Nitin Vashisth" : ["Vimal gupta", "Vivek Gandhi", "Nikhil kumar", "Ashish Awasthi"],
+"Lokesh Kumar Singh" : ["Vinod Kumar", "Anurag Sexana", "Neeraj Sharma"],
+"Priyank Saraswat" : ["Gaurav Kumar Sharma", "Pawan Kumar", "Ankit Agrawal", "Abdul Shafee"],
+"Alok Bhatnagar" : ["Mayank"],
+"Manoj" : ["Parvendra Singh", "Arjun Singh"],
+"RASMIKANT BHUJABAL" : ["Bikramaditya Panda", "Sumanta Mohanty"],
+"Dhananjay Beura" : ["Ashish Kumar Sonkar"],
+"Sunil Kumar Mohanty" : ["Sushanta Kumar Biswal", "Pradip Kumar Mohanty"],
+"Biswaranjan Das" : ["Ajit Kumar Samal", "Rajeev Lochan Nayak", "Pralaya Kumar Dash", "Tofan Ranjan Biswal", "Sampada Das", "Pradyumna Dash", "Bishnu Prasad Nayak"],
+"Biswaranjan Das/Guru Charan Nayak" : ["Biswaranjan Dash", "Sampada Das"],
+"Guru Charan Nayak" : ["Mukesh Sahoo"],
+"MOHAN PATRO" : ["Santosh Kumar Behera", "Abhilash Pasupalak", "Srikanta Kumar Panda"],
+"Supriya Bardhan" : ["Sanjib Dalal", "Sanjay Chakraborty", "Jayanta Das"],
+"Rajib Chakraborty" : ["Santanu Das", "Apurba Kar Roy", "Avoy Goldar", "Hridam Tirkey", "Arnab Roy"],
+"Dipak Das" : ["Gopal Patra", "Biswajit Mandal", "Uttam Saha", "Tubai Saha"],
+"Hari Chandra Newar" : ["Jay Sing Routia", "Pratap Uddin Asamed", "Jyoti Prakash Ghosh", "Dilip Das", "Ghanshyam Sharma", "Dilip Das"],
+"SK SABIR" : ["Shibnath Kundu", "Manasa Pal", "Arup Bandhopadhye"],
+"Shaibal Basak" : ["Amit Ghosh", "Papan Ghosh", "Sandip Chakraborty", "Rabindranath Mondal", "Akash Modak", "Aminul Islam", "Soumesh Chatterjee", "Subir Chandra Samaddar", "Sanjay Chakraborty", "Uday Kumar Das", "Mohammad Naaj", "Bhabesh Karan", "JAYANTA GHOSH", "Chandan Das"],
+"Biplab Banerjee" : ["Manasa Pal", "Santanu Pakhira", "Chandranath Saha", "RAKESH MONDAL"],
+"SAMARESH GHOSH" : ["Adwaita Das", "Aminul Islam", "Avijit Das"],
+"SOURAV BHATTACHARYA" : ["Sandip Ghosh", "Subham Chakraborty", "Abdul Hakim Mallick"],
+"Om Prakash" : ["Ashish Kumar Sinha", "Rahul Kumar", "Mantu Mandal", "Sanjay Kumar Nath", "Abhijit Mukharjee", "Ashish Kumar"],
+"Bipul Bose" : ["Bablu Kolita", "Suresh Chaudhary", "Suresh Chaudhary", "Utpal Dutta", "Bablu Kolita", "Dhruba Jyoti Das", "Bijoy Chatri"],
+"Sanjoy Ch Das" : ["Pijush Chandra Roy", "Ajoy Saha"],
+"Raunak Kumar" : ["Rakesh Kumar Jaiswal", "Joydev Sinha", "Vishal Kumar", "Rakesh"],
+"Harish Kumar" : ["Manish Kumar", "Avinash Kumar"],
+"Rana Dharmaraj Singh" : ["Ravi Ranjan", "Raju Kumar Mishra - TSM", "Rabin Kumar Sinha"],
+"Manoj Kumar Thakur" : ["Ashish Prakash Jha", "Sujay Kumar"],
+"Abhishek Kumar" : ["Satish Kumar", "Ranjan Kumar Srivastava"],
+"Vijay Singh" : ["TBA_Ambedkar Nagar", "Vivekanand Chaudhari", "CHANDAN PANDEY"],
+"Abhiranjan Singh" : ["TBA_Mau", "Harendra Yadav", "TBA_Ghazipur"],
+"Saurabh Rai" : ["Kapil Mishra", "Pravin Singh", "Rajeev Kumar Panday", "Anurag Yadav", "Pramod Gupta"],
+"Manish Garg" : ["TBA_Sitapur", "Shivakant", "TBA_Hardoi", "TBA_LKO", "Azad Singh", "Harsh Gupta", "Vinay Shukla", "Yugal Kishor"],
+"Prabhat Kumar Sharma" : ["Suresh Mishra", "Umang Gupta", "Rakesh Verma", "Brijesh singh"],
+"PRABHAT CHANDRA NAYAK" : ["ROHIT SRIVASTAVA", "TBA_Basti", "GAUS ALAM"],
+"Nitin Goswamee" : ["Lalit Khattar", "Amit Singh", "TBA_Mahoba"],
+"Virendra Kumar" : ["Puneet Shrivastava", "Sanjeev Mishra", "Mohd. Kadir", "TBA_Kanpur", "TBA_Fatehpur"],
+"ANUPAM MANI UPADHAYA" : ["SANJAY GOND", "Shravan Mani", "SANJAY MADHESIYA"],
+"Chandrakant Madanlal Solanki" : ["Jigneshkumar Jayendrabhai Dhobi", "Sachin Madanlal Solanki", "Vacant Ahemdabad"],
+"Rupeshbhai Rashikbhai Dave" : ["Rupesh Dave", "Pankaj Solanki & Rupesh Dave", "Arjun Chellana"],
+"Vineshkumar Balkrushnaray Trivedi" : ["Gosai Kailashgiri Ramnikgiri", "Rupesh Dave", "Arjun Chellana", "Vacant Bhavanagar"],
+"Arjun Jethabhai Chhelana" : ["Arjun Chellana"],
+"Manish Ashokbhai Vagh" : ["Piyush Kumar Patel", "Sandeep Rameshbhai Padhiyar", "Rashmikant Dasharathbhai Limbachiya", "Irfanbhai Jahurbhai Khatri", "Bipin Parshottambhai Danidhariya", "Prakashbhai Ramanbhai Patel", "Chaudhari Hirenkumar Subhashbhai", "Rakesh Dodhi", "Jeeteshbhai	Babubhai Parmar"],
+"Rahul rai " : ["atul singh", "Rahul gupta ", "Sumit Gupta"],
+"Abhijeet Singh" : ["Vijay purohit", "kishan sharma", "ASHISH SINGH"],
+"Ajay Manjul Yadav" : ["SUNIL SHARMA", "Dabbir Usman", "Manish Mishra", "BABULAL YADAV", "I S PARKAR"],
+"Samadhan Jadhav" : ["NANA NIKAM", "CHETAN SHINDE", "PRAVIN GALANDER", "CHETAN LOHAR", "MOHIN SHEK", "MILIND GAKWAD"],"Mr.Sanjay Bhopte" : ["rangeet jatav", "naresh sharma", "santosh gupta", "harish sarathe"],
+"Aashutosh Shrivastava" : ["NARAYAN VERMA", "NEELESH SINGH RAJPUT", "YOGESH KUMAR MISHRA", "SAMARTH YADAV", "SWAPNIL VISHWAKARMA", "AMAR KOSTA", "AMIT KUMAR SAINI  ", "KRISHNA KUMAR SAHU", "AMIT TIWARI", "PAWAN VISHWAKARMA", "NARESH DOHARE", "ANKUL GUPTA", "PRAMOD GUPTA"],
+"Yatendra Singh" : ["Govind soni", "Vinay Jaiswal", "Vikas Das", "Naveen Rathore"],
+"Narendra Singh Solanki" : ["Amit Jain", "Manish Mali", "Amit puri", "Amit mittal", "Gajendra Bhawsar", "Vikas Das"],
+"Pradeep Sharma" : ["Vijay varma", "Kapil shrivas", "VIjay VERMA", "Sunil Bhadoriya", "RAGHUVEER SINGH TOMAR", "Asif hussain", "Anoop tiwari", "RAHUL SHRIVASTAV", "hemendr bankar"],
+"Sumit Kakkar" : ["ROMY SAINI", "DEEPAK ARORA", "NITIN ANAND", "KULDEEP KUMAR"],
+"Gulshan Kalra" : ["Jagdish kumar", "Ankit", "Uttam bhattiwal", "Kulwinder singh"],
+"Ashok Kumar Pandita" : ["Ravinder Kumar", "Karan Thakur", "Pankaj Verma", "Ravi Nagpal"],
+"Kamal Sharma" : ["Jethmal Gehlot", "Ravikant sharma", "Jethmal Gehlot", "Ravikant sharma"],
+"Ajay Singh Rajawat" : ["Pawan Maheshwari", "Vijay Jain", "HANUMAN SEN"],
+"Udai Singh" : ["Amar singh"],
+"Vishnu Shankar Chaturvedi" : ["Sunil Vyas", "Madan Nagda"],
+"Ranveer Singh" : ["Manoj Sharma", "Vikram Singh", "Hakim Khan", "Rajesh barala", "Son Singh", "Vineet Sharma"],
+"SK SWAMI" : ["GOVIND GADHAVE", "PRAVIN SALUNKHE", "PRASHANT MULE", "SAKIB SHAIKH"],
+"Shivaji Tamgale" : ["Swapnil Bende", "GAJANAN BONDKULE", "AKSHAY BHORE", "VISHAL KANAWADE", "KIRAN SONAVANE", "SACHIN LUGDE"],
+"RAJESH UPADHYAY" : ["SURAJ TARU", "NIKHIL", "NIVRUTTI SURVE", "GANESH DABI", "SHANKAR GAIKWAD", "PRASHANT GAIKWAD", "AJAY SHINDE"],
+"VIJAY WAGH" : ["RAHUL ZHWARE", "YOGENDRA PATIL", "BALASAHEB RAUT", "RAHUL ZHAWARE", "BILAL SHAIKH"],
+"CHANDPASHA PATHAN" : ["BILAL SHAIKH", "WASEEM KAZI", "HAIDAR SHAIKH"],
+"SAMBHAJI JADHAV" : ["ABHIJEET NALAVADE"],
+"RAVINDRA MOHITE" : ["DIGVIJAY SAWANT", "SAURABH JADHAV"],
+"NANDKUMAR SHIRGAVE" : ["PRASHANT KININGE", "DEVENDRA KAMBLE", "VIPUL CHAUGULE", "Saad Mulla", "SAURABH JADHAV"],
+"Nizar C P" : ["Chandran"],
+"T.V.Rajagopal" : ["Sellamani", "Gopalamurugan", "Alagu Mariappan", "Sumithraj"],
+"V. Venkatraman" : ["Balaji A", "selvam p", "Selvam", "Mansoor Ali Jailapdheen", "A Abdul Jafarulla", "Ranjithkumar R"],
+"Padmanaban Saravanan" : ["H Sundaram"],
+"Jayaprakash N" : ["Jayaprakash N", "Karthik", "Hari Baskar T", "Sathiyanarayanan Gopikannan"],
+"Vasantha kumar M" : ["HUBLI-VECANT"],
+"MUNIRAJA GR" : ["MAHAMMED SIBGAT R", "ABBU BAKAR", "SHIVARUDRA ", "VAISHAK", "KEMPRAJA"],
+"Muniraja G R" : ["MAHAMMED SIBGAT R", "NAVEEN KUMR T"],
+"Vedantam Murali Krishna" : ["Javeed Khan", "Ravindra Raju"],
+"Murali Krishna" : ["Javeed Khan"],
+"Singavarapu Ravi" : ["G SOMESWAARAO", "D MANOJ KUMAR", "T SURENDRA", "S Guna Prasad"],
+"G Anant Rao" : ["MANMADHARAO"],
+"Kottapalli Murali Krishna" : ["MD MUNEER"],
+"KVSV Paparo" : ["MANMADHARAO", "VENKATARAMANA", "MD MUNEER", "SUDHEER"],
+"I.Kranthi Kumar" : ["M.pavan Kumar", "M.Swamy", "M.Kumar", "G.Suman"],
+"Md.Sabeer" : ["Y.Sridhar", "M.Kumar", "G.Suresh", "P.Rambabu", "B.Rajesh"],
+"M.Ravi kumar" : ["A.Vijay Kumar", "M.Vijay Babu", "J.Harish", "B.Narsing Rao", "Faiyaz", "K.Sai Kumar", "Durganand"]
+
+        };
+
+        function updateASM() {
+            const stateHead = document.getElementById("stateHead").value;
+            const asmDropdown = document.getElementById("asm");
+            asmDropdown.innerHTML = '<option value="">Select ASM</option>';
+            if (stateHead && asmData[stateHead]) {
+                asmData[stateHead].forEach(asm => {
+                    let option = document.createElement("option");
+                    option.value = asm;
+                    option.textContent = asm;
+                    asmDropdown.appendChild(option);
+                });
+            }
+        }
 
         function updateSO() {
             const asm = document.getElementById("asm").value;
@@ -111,27 +284,49 @@
         }
 
         function addSalesData() {
+	const currentDate = document.getElementById("currentDate").value	
+            const stateHead = document.getElementById("stateHead").value
             const asm = document.getElementById("asm").value;
             const so = document.getElementById("so").value;
             const retailSale = document.getElementById("retailSale").value;
             const subDbBilling = document.getElementById("subDbBilling").value;
             const secondaryWholesale = document.getElementById("secondaryWholesale").value;
 
-            if (!asm || !so || retailSale === "" || subDbBilling === "" || secondaryWholesale === "") {
+if (!currentDate || !stateHead || !asm || !so || retailSale === "" || subDbBilling === "" || secondaryWholesale === "") {
                 alert("Please fill in all fields before adding sales data.");
                 return;
             }
 
-            salesData.push({ asm, so, retailSale, subDbBilling, secondaryWholesale });
+             salesData.push({
+                currentDate,
+                stateHead,
+                asm,
+                so,
+                retailSale,
+                subDbBilling,
+                secondaryWholesale
+            });
 
+            // Update the table
             const tableBody = document.getElementById("summaryTable").getElementsByTagName("tbody")[0];
             const newRow = tableBody.insertRow();
-            newRow.innerHTML = `<td>${asm}</td><td>${so}</td><td>${retailSale}</td><td>${subDbBilling}</td><td>${secondaryWholesale}</td>`;
+            newRow.innerHTML = `
+                <td>${currentDate}</td>
+                <td>${stateHead}</td>
+                <td>${asm}</td>
+                <td>${so}</td>
+                <td>${retailSale}</td>
+                <td>${subDbBilling}</td>
+                <td>${secondaryWholesale}</td>
+            `;
 
-            document.getElementById("so").value = "";
-            document.getElementById("retailSale").value = "";
-            document.getElementById("subDbBilling").value = "";
-            document.getElementById("secondaryWholesale").value = "";
+            // Clear the form fields
+document.getElementById("stateHead").value = "";
+document.getElementById("asm").innerHTML = '<option value="">Select ASM</option>';
+document.getElementById("so").innerHTML = '<option value="">Select SO</option>';
+document.getElementById("retailSale").value = "";
+document.getElementById("subDbBilling").value = "";
+document.getElementById("secondaryWholesale").value = "";
         }
 
         function submitData() {
@@ -140,22 +335,25 @@
                 return;
             }
 
-            fetch('https://script.google.com/macros/s/AKfycbxaXdLJ0L5qvtrS_s40JtQw681XBHR22IqH7SrOue4zCbBJK3dp7YPYxEpznAyC76GbCg/exec', {
-                method: 'POST',
+            fetch("https://script.google.com/macros/s/AKfycbwFBX1A98N1b3SJKihfDJ-Pxg7HqSnwhOIF0vzJc4WnUhfg29oYnEVQl7FI3NpsBluwIQ/exec", {
+                method: "POST",
                 headers: {
-                    'Content-Type': 'application/json'
+                    "Content-Type": "application/json"
                 },
+                mode: "no-cors",
                 body: JSON.stringify(salesData)
             })
-            .then(response => response.json())
-            .then(data => {
-                alert("Data submitted successfully!");
-                salesData.length = 0;
-                document.getElementById("summaryTable").getElementsByTagName("tbody")[0].innerHTML = "";
+            .then(response => {
+                console.log("Data sent successfully");
+                // Show the notification
+                const notification = document.getElementById("notification");
+                notification.style.display = "block";
+                // Hide the notification after 3 seconds
+                setTimeout(() => {
+                    notification.style.display = "none";
+                }, 3000);
             })
-            .catch(error => {
-                alert("Error submitting data: " + error);
-            });
+            .catch(error => console.error("Error:", error));
         }
     </script>
 
